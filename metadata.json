@@ -6,5 +6,5 @@
     "license": "MIT",
     "name": "Date and time",
     "name[de]": "Datum und Uhrzeit",
-    "url": "https://github.com/albertlauncher/plugins/tree/main/datetime",
+    "url": "https://github.com/albertlauncher/albert-plugin-datetime",
 }
