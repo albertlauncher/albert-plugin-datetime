@@ -1,5 +1,6 @@
-// Copyright (c) 2023-2024 Manuel Schneider
+// Copyright (c) 2023-2025 Manuel Schneider
 
+#include "items.h"
 #include "plugin.h"
 #include "ui_configwidget.h"
 #include <QDateTime>
@@ -11,12 +12,16 @@
 using namespace albert;
 using namespace std;
 
+QString tr_copy = Plugin::tr("Copy to clipboard");
+QString tr_copy_with_placeholder = Plugin::tr("Copy '%1' to clipboard");
 
 Plugin::Plugin():
-    tr_time(tr("Time")),
-    tr_date(tr("Date")),
-    tr_unix(tr("Unix time")),
-    utc("UTC")
+    items({make_shared<DateTimeItem>(),
+           make_shared<DateItem>(),
+           make_shared<EpochItem>(),
+           make_shared<TimeItem>(),
+           make_shared<UtcItem>()})
+
 {
     restore_show_date_on_empty_query(settings());
 }
@@ -29,136 +34,31 @@ QString Plugin::synopsis(const QString &query) const
     return {};
 }
 
-inline static QString tr_copy() { return Plugin::tr("Copy to clipboard"); }
-
-inline static QString tr_copy_with_placeholder() { return Plugin::tr("Copy '%1' to clipboard"); }
 
 vector<RankItem> Plugin::handleGlobalQuery(const Query &query)
 {
     vector<RankItem> r;
-    const auto &s = query.string();
 
-    if (show_date_on_empty_query_ && s.isEmpty())
-    {
-        const QLocale loc;
-        const auto dt = QDateTime::currentDateTime();
+    for (const auto &i : items)
+        if (i->subtext().startsWith(query, Qt::CaseInsensitive))
+            r.emplace_back(i, (double)query.string().size() / i->subtext().size());
 
-        r.emplace_back(
-            StandardItem::make(
-                QStringLiteral("dt"),
-                loc.toString(dt.time(), QLocale::ShortFormat),
-                loc.toString(dt.date(), QLocale::LongFormat),
-                icon_urls
-            ),
-            1.0
-        );
-    }
-
-    if (tr_time.startsWith(query.string(), Qt::CaseInsensitive))
-    {
-        const QLocale loc;
-        const auto dt = QDateTime::currentDateTime();
-        const auto t = loc.toString(dt.time(), QLocale::ShortFormat);
-
-        r.emplace_back(
-            StandardItem::make(
-                QStringLiteral("t"), t, tr_time, tr_time, icon_urls,
-                {
-                    {
-                        QStringLiteral("c"), tr_copy(),
-                        [=]{ setClipboardText(t); }
-                    }
-                }
-            ),
-            (double)s.size() / tr_time.size()
-        );
-    }
-
-    if (tr_date.startsWith(query.string(), Qt::CaseInsensitive))
-    {
-        const QLocale loc;
-        const auto dt = QDateTime::currentDateTime();
-        const auto lf = loc.toString(dt.date(), QLocale::LongFormat);
-        const auto sf = loc.toString(dt.date(), QLocale::ShortFormat);
-
-        r.emplace_back(
-            StandardItem::make(
-                QStringLiteral("d"), lf, tr_date, tr_date, icon_urls,
-                {
-                    {
-                        QStringLiteral("cl"), tr_copy(),
-                        [=]{ setClipboardText(lf); }
-                    },
-                    {
-                        QStringLiteral("cs"), tr_copy_with_placeholder().arg(sf),
-                        [=]{ setClipboardText(sf); }
-                    }
-                }
-            ),
-            (double)s.size() / tr_date.size()
-        );
-    }
-
-    if (tr_unix.startsWith(query.string(), Qt::CaseInsensitive))
-    {
-        const auto t = QString::number(QDateTime::currentSecsSinceEpoch());
-
-        r.emplace_back(
-            StandardItem::make(
-                QStringLiteral("unix"), t, tr_unix, tr_unix, icon_urls,
-                {
-                    {
-                        QStringLiteral("c"), tr_copy(),
-                        [=](){ setClipboardText(t); }
-                    }
-                }
-            ),
-            (double)s.size() / tr_unix.size()
-        );
-    }
-
-    if (utc.startsWith(query.string(), Qt::CaseInsensitive))
-    {
-        const QLocale loc;
-        const QDateTime dt = QDateTime::currentDateTimeUtc();
-        const auto sf = loc.toString(dt, QLocale::ShortFormat);
-        const auto lf = loc.toString(dt, QLocale::LongFormat);
-
-        r.emplace_back(
-            StandardItem::make(
-                utc, sf, tr("UTC date and time"), utc, icon_urls,
-                {
-                    {
-                        QStringLiteral("scp"), tr_copy(),
-                        [=](){ setClipboardText(sf); }
-                    },
-                    {
-                        QStringLiteral("lcp"), tr_copy_with_placeholder().arg(lf),
-                        [=](){ setClipboardText(lf); }
-                    }
-                }
-            ),
-            (double)s.size() / utc.size()
-        );
-    }
 
     bool isNumber;
-    const ulong unixtime = s.toULong(&isNumber);
+    const ulong unixtime = query.string().toULong(&isNumber);
     if (isNumber)
     {
-        const QLocale loc;
-        const auto ls = loc.toString(QDateTime::fromSecsSinceEpoch(unixtime), QLocale::LongFormat);
+        const auto s = QLocale().toString(QDateTime::fromSecsSinceEpoch(unixtime), QLocale::LongFormat);
 
         r.emplace_back(
             StandardItem::make(
-                QStringLiteral("u2dt"), ls, tr("Date and time from unix time"), icon_urls,
-                {
-                    {
-                        QStringLiteral("c"), tr_copy(),
-                        [=](){ setClipboardText(ls); }
-                    }
-                }
-            ),
+                QStringLiteral("u2dt"),
+                s,
+                tr("Date and time from unix time"),
+                DateTimeItem::icon_urls,
+                {{ QStringLiteral("c"), tr_copy,
+                  [=]{ setClipboardText(s); }}}
+                ),
             0.
         );
     }
@@ -168,19 +68,8 @@ vector<RankItem> Plugin::handleGlobalQuery(const Query &query)
 
 vector<shared_ptr<Item>> Plugin::handleEmptyQuery()
 {
-    if (show_date_on_empty_query_)
-    {
-        QLocale loc;
-        QDateTime dt = QDateTime::currentDateTime();
-        return {
-            StandardItem::make(
-                QStringLiteral("empty"),
-                loc.toString(dt.time(), QLocale::ShortFormat),
-                loc.toString(dt.date(), QLocale::LongFormat),
-                icon_urls
-                )
-        };
-    }
+    if (show_date_on_empty_query())
+        return { items[0] };
     return {};
 }
 

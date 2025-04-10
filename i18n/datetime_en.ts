@@ -25,6 +25,29 @@
     </message>
 </context>
 <context>
+    <name>DateTimeItemBase</name>
+    <message>
+        <source>Date</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Unix time</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Time</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>UTC date and time</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Date and time</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>Plugin</name>
     <message>
         <source>Time</source>
@@ -35,19 +58,11 @@
         <translation></translation>
     </message>
     <message>
-        <source>Unix time</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Copy to clipboard</source>
         <translation></translation>
     </message>
     <message>
         <source>Copy &apos;%1&apos; to clipboard</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>UTC date and time</source>
         <translation></translation>
     </message>
     <message>
