@@ -9,6 +9,7 @@
 #include <QWidget>
 #include <albert/albert.h>
 #include <albert/standarditem.h>
+#include <albert/widgets.h>
 using namespace albert;
 using namespace std;
 
@@ -79,7 +80,11 @@ QWidget *Plugin::buildConfigWidget()
     Ui::ConfigWidget ui;
     ui.setupUi(w);
 
-    ALBERT_PROPERTY_CONNECT_CHECKBOX(this, show_date_on_empty_query, ui.checkBox_emptyQuery)
+    albert::util::widgets::bind(ui.checkBox_emptyQuery,
+                                this,
+                                &Plugin::show_date_on_empty_query,
+                                &Plugin::set_show_date_on_empty_query,
+                                &Plugin::show_date_on_empty_query_changed);
 
     return w;
 }
