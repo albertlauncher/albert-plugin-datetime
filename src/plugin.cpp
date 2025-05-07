@@ -9,9 +9,10 @@
 #include <QWidget>
 #include <albert/albert.h>
 #include <albert/standarditem.h>
-#include <albert/widgets.h>
+#include <albert/widgetsutil.h>
 using namespace albert;
 using namespace std;
+using namespace util;
 
 QString tr_copy = Plugin::tr("Copy to clipboard");
 QString tr_copy_with_placeholder = Plugin::tr("Copy '%1' to clipboard");
@@ -80,11 +81,11 @@ QWidget *Plugin::buildConfigWidget()
     Ui::ConfigWidget ui;
     ui.setupUi(w);
 
-    albert::util::widgets::bind(ui.checkBox_emptyQuery,
-                                this,
-                                &Plugin::show_date_on_empty_query,
-                                &Plugin::set_show_date_on_empty_query,
-                                &Plugin::show_date_on_empty_query_changed);
+    bind(ui.checkBox_emptyQuery,
+         this,
+         &Plugin::show_date_on_empty_query,
+         &Plugin::set_show_date_on_empty_query,
+         &Plugin::show_date_on_empty_query_changed);
 
     return w;
 }
