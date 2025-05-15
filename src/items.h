@@ -3,6 +3,7 @@
 #pragma once
 #include <QObject>
 #include <albert/item.h>
+#include <memory>
 #include <set>
 
 class DateTimeItemBase : public QObject, public albert::Item
@@ -37,20 +38,7 @@ class DateItem : public DateTimeItemBase
 public:
     DateItem();
     QString makeText() override final;
-};
-
-class DateTimeItem : public DateTimeItemBase
-{
-public:
-    DateTimeItem();
-    QString makeText() override final;
-};
-
-class EpochItem : public DateTimeItemBase
-{
-public:
-    EpochItem();
-    QString makeText() override final;
+    static QString trName();
 };
 
 class TimeItem : public DateTimeItemBase
@@ -58,6 +46,15 @@ class TimeItem : public DateTimeItemBase
 public:
     TimeItem();
     QString makeText() override final;
+    static QString trName();
+};
+
+class DateTimeItem : public DateTimeItemBase
+{
+public:
+    DateTimeItem();
+    QString makeText() override final;
+    static QString trName();
 };
 
 class UtcItem : public DateTimeItemBase
@@ -65,4 +62,15 @@ class UtcItem : public DateTimeItemBase
 public:
     UtcItem();
     QString makeText() override final;
+    static QString trName();
 };
+
+class EpochItem : public DateTimeItemBase
+{
+public:
+    EpochItem();
+    QString makeText() override final;
+    static QString trName();
+};
+
+std::shared_ptr<albert::Item> makeFromEpochItem(ulong epoch);

@@ -19,8 +19,6 @@ public:
     std::vector<albert::RankItem> handleGlobalQuery(const albert::Query &) override;
     std::vector<std::shared_ptr<albert::Item>> handleEmptyQuery() override;
 
-    std::vector<std::shared_ptr<albert::Item>> items;
-
     ALBERT_PLUGIN_PROPERTY(bool, show_date_on_empty_query, false)
 
 };

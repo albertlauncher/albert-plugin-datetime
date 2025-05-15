@@ -1,21 +1,18 @@
 // Copyright (c) 2023-2025 Manuel Schneider
 
 #include "items.h"
-#include <QApplication>
 #include <QDateTime>
 #include <QLocale>
-#include <QTimeZone>
-#include <QWidget>
 #include <albert/albert.h>
-#include <albert/query.h>
 #include <albert/standarditem.h>
+using namespace albert::util;
 using namespace albert;
 using namespace std;
 
-QStringList DateTimeItemBase::icon_urls = {":datetime"};
-extern QString tr_copy;
-extern QString tr_copy_with_placeholder;
+static QString trCopy(){ return DateTimeItemBase::tr("Copy"); }
+static QString trCopyPaste(){ return DateTimeItemBase::tr("Copy and paste"); }
 
+QStringList DateTimeItemBase::icon_urls = {":datetime"};
 
 DateTimeItemBase::DateTimeItemBase(const QString &id, const QString &text, const QString &subtext):
     id_(id),
@@ -39,7 +36,16 @@ QString DateTimeItemBase::inputActionText() const { return subtext_; }
 
 vector<Action> DateTimeItemBase::actions() const
 {
-    return {{ QStringLiteral("c"), tr_copy, [this]{ setClipboardText(text()); } }};
+    vector<Action> actions;
+
+    actions.emplace_back(QStringLiteral("c"), trCopy(),
+                         [this]{ setClipboardText(text()); });
+
+    if (havePasteSupport())
+        actions.emplace_back(QStringLiteral("cp"), trCopyPaste(),
+                             [this]{ setClipboardTextAndPaste(text());});
+
+    return actions;
 }
 
 void DateTimeItemBase::timerEvent(QTimerEvent*)
@@ -55,7 +61,7 @@ void DateTimeItemBase::timerEvent(QTimerEvent*)
 
 // ------------------------------------------------------------------------------------------------
 
-DateItem::DateItem() : DateTimeItemBase("d", makeText(), DateTimeItemBase::tr("Date")) {}
+DateItem::DateItem() : DateTimeItemBase(QStringLiteral("d"), makeText(), trName()) {}
 
 QString DateItem::makeText()
 {
@@ -63,15 +69,12 @@ QString DateItem::makeText()
     return QLocale().toString(QDateTime::currentDateTime().date(), QLocale::LongFormat);
 }
 
-// ------------------------------------------------------------------------------------------------
-
-EpochItem::EpochItem() : DateTimeItemBase("e", makeText(), DateTimeItemBase::tr("Unix time")) {}
-
-QString EpochItem::makeText() { return QString::number(QDateTime::currentSecsSinceEpoch()); }
+QString DateItem::trName() { return DateTimeItemBase::tr("Date"); }
 
 // ------------------------------------------------------------------------------------------------
 
-TimeItem::TimeItem() : DateTimeItemBase("t", makeText(), DateTimeItemBase::tr("Time")) {}
+TimeItem::TimeItem() : DateTimeItemBase(QStringLiteral("t"), makeText(), trName())
+{}
 
 QString TimeItem::makeText()
 {
@@ -79,20 +82,55 @@ QString TimeItem::makeText()
     return QDateTime::currentDateTime().time().toString("hh:mm:ss");
 }
 
+QString TimeItem::trName() { return DateTimeItemBase::tr("Time"); }
+
 // ------------------------------------------------------------------------------------------------
 
-UtcItem::UtcItem() : DateTimeItemBase("u", makeText(), DateTimeItemBase::tr("UTC date and time")) {}
+DateTimeItem::DateTimeItem() : DateTimeItemBase(QStringLiteral("dt"), makeText(), trName()) {}
+
+QString DateTimeItem::makeText()
+{
+    return QLocale().toString(QDateTime::currentDateTime(), QLocale::LongFormat);
+}
+
+QString DateTimeItem::trName() { return DateTimeItemBase::tr("Date and time"); }
+
+// ------------------------------------------------------------------------------------------------
+
+UtcItem::UtcItem() : DateTimeItemBase(QStringLiteral("u"), makeText(), trName()) {}
 
 QString UtcItem::makeText()
 {
     return QLocale().toString(QDateTime::currentDateTimeUtc(), QLocale::ShortFormat);
 }
 
+QString UtcItem::trName() { return DateTimeItemBase::tr("UTC date and time"); }
+
 // ------------------------------------------------------------------------------------------------
 
-DateTimeItem::DateTimeItem() : DateTimeItemBase("dt", makeText(), DateTimeItemBase::tr("Date and time")) {}
+EpochItem::EpochItem() : DateTimeItemBase(QStringLiteral("e"), makeText(), trName()) {}
 
-QString DateTimeItem::makeText()
+QString EpochItem::makeText() { return QString::number(QDateTime::currentSecsSinceEpoch()); }
+
+QString EpochItem::trName() { return DateTimeItemBase::tr("Unix time"); }
+
+// ------------------------------------------------------------------------------------------------
+
+shared_ptr<Item> makeFromEpochItem(ulong epoch)
 {
-    return QLocale().toString(QDateTime::currentDateTime(), QLocale::LongFormat);
+    const auto s = QLocale().toString(QDateTime::fromSecsSinceEpoch(epoch), QLocale::LongFormat);
+
+    vector<Action> actions;
+    actions.emplace_back(QStringLiteral("c"), trCopy(), [=]{ setClipboardText(s); });
+    if (havePasteSupport())
+        actions.emplace_back(QStringLiteral("cp"), trCopyPaste(),
+                             [=]{ setClipboardTextAndPaste(s);});
+
+    return StandardItem::make(
+        QStringLiteral("u2dt"),
+        s,
+        DateTimeItemBase::tr("Date and time from unix time"),
+        DateTimeItem::icon_urls,
+        ::move(actions)
+    );
 }

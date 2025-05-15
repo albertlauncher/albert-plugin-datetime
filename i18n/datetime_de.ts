@@ -13,20 +13,6 @@
     </message>
 </context>
 <context>
-    <name>DateItem</name>
-    <message>
-        <source>Date</source>
-        <translation type="vanished">Datum</translation>
-    </message>
-</context>
-<context>
-    <name>DateTimeItem</name>
-    <message>
-        <source>Date and time</source>
-        <translation type="vanished">Datum und Uhrzeit</translation>
-    </message>
-</context>
-<context>
     <name>DateTimeItemBase</name>
     <message>
         <source>Date</source>
@@ -48,57 +34,17 @@
         <source>Date and time</source>
         <translation>Datum und Uhrzeit</translation>
     </message>
-</context>
-<context>
-    <name>EpochItem</name>
     <message>
-        <source>Unix time</source>
-        <translation type="vanished">Unixzeit</translation>
-    </message>
-</context>
-<context>
-    <name>Plugin</name>
-    <message>
-        <source>Time</source>
-        <translation>Zeit</translation>
+        <source>Copy</source>
+        <translation>Kopieren</translation>
     </message>
     <message>
-        <source>Date</source>
-        <translation>Datum</translation>
-    </message>
-    <message>
-        <source>Unix time</source>
-        <translation type="vanished">Unixzeit</translation>
-    </message>
-    <message>
-        <source>Copy to clipboard</source>
-        <translation>In die Zwischenablage kopieren</translation>
-    </message>
-    <message>
-        <source>Copy &apos;%1&apos; to clipboard</source>
-        <translation>&apos;%1&apos; in die Zwischenablage kopieren</translation>
-    </message>
-    <message>
-        <source>UTC date and time</source>
-        <translation type="vanished">UTC Datum und Uhrzeit</translation>
+        <source>Copy and paste</source>
+        <translation>Kopieren und einfügen</translation>
     </message>
     <message>
         <source>Date and time from unix time</source>
         <translation>Datum und Uhrzeit aus Unixzeit</translation>
-    </message>
-</context>
-<context>
-    <name>TimeItem</name>
-    <message>
-        <source>Time</source>
-        <translation type="vanished">Zeit</translation>
-    </message>
-</context>
-<context>
-    <name>UtcItem</name>
-    <message>
-        <source>UTC date and time</source>
-        <translation type="vanished">UTC Datum und Uhrzeit</translation>
     </message>
 </context>
 </TS>
