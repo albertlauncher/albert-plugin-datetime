@@ -6,13 +6,14 @@
 #include <albert/albert.h>
 #include <albert/standarditem.h>
 using namespace albert::util;
+using namespace Qt::StringLiterals;
 using namespace albert;
 using namespace std;
 
 static QString trCopy(){ return DateTimeItemBase::tr("Copy"); }
 static QString trCopyPaste(){ return DateTimeItemBase::tr("Copy and paste"); }
 
-QStringList DateTimeItemBase::icon_urls = {":datetime"};
+QStringList DateTimeItemBase::icon_urls = {u":datetime"_s};
 
 DateTimeItemBase::DateTimeItemBase(const QString &id, const QString &text, const QString &subtext):
     id_(id),
@@ -38,11 +39,11 @@ vector<Action> DateTimeItemBase::actions() const
 {
     vector<Action> actions;
 
-    actions.emplace_back(QStringLiteral("c"), trCopy(),
+    actions.emplace_back(u"c"_s, trCopy(),
                          [this]{ setClipboardText(text()); });
 
     if (havePasteSupport())
-        actions.emplace_back(QStringLiteral("cp"), trCopyPaste(),
+        actions.emplace_back(u"cp"_s, trCopyPaste(),
                              [this]{ setClipboardTextAndPaste(text());});
 
     return actions;
@@ -61,7 +62,7 @@ void DateTimeItemBase::timerEvent(QTimerEvent*)
 
 // ------------------------------------------------------------------------------------------------
 
-DateItem::DateItem() : DateTimeItemBase(QStringLiteral("d"), makeText(), trName()) {}
+DateItem::DateItem() : DateTimeItemBase(u"d"_s, makeText(), trName()) {}
 
 QString DateItem::makeText()
 {
@@ -73,20 +74,20 @@ QString DateItem::trName() { return DateTimeItemBase::tr("Date"); }
 
 // ------------------------------------------------------------------------------------------------
 
-TimeItem::TimeItem() : DateTimeItemBase(QStringLiteral("t"), makeText(), trName())
+TimeItem::TimeItem() : DateTimeItemBase(u"t"_s, makeText(), trName())
 {}
 
 QString TimeItem::makeText()
 {
     // return QLocale().toString(QDateTime::currentDateTime().time(), QLocale::ShortFormat);
-    return QDateTime::currentDateTime().time().toString("hh:mm:ss");
+    return QDateTime::currentDateTime().time().toString(u"hh:mm:ss"_s);
 }
 
 QString TimeItem::trName() { return DateTimeItemBase::tr("Time"); }
 
 // ------------------------------------------------------------------------------------------------
 
-DateTimeItem::DateTimeItem() : DateTimeItemBase(QStringLiteral("dt"), makeText(), trName()) {}
+DateTimeItem::DateTimeItem() : DateTimeItemBase(u"dt"_s, makeText(), trName()) {}
 
 QString DateTimeItem::makeText()
 {
@@ -97,7 +98,7 @@ QString DateTimeItem::trName() { return DateTimeItemBase::tr("Date and time"); }
 
 // ------------------------------------------------------------------------------------------------
 
-UtcItem::UtcItem() : DateTimeItemBase(QStringLiteral("u"), makeText(), trName()) {}
+UtcItem::UtcItem() : DateTimeItemBase(u"u"_s, makeText(), trName()) {}
 
 QString UtcItem::makeText()
 {
@@ -108,7 +109,7 @@ QString UtcItem::trName() { return DateTimeItemBase::tr("UTC date and time"); }
 
 // ------------------------------------------------------------------------------------------------
 
-EpochItem::EpochItem() : DateTimeItemBase(QStringLiteral("e"), makeText(), trName()) {}
+EpochItem::EpochItem() : DateTimeItemBase(u"e"_s, makeText(), trName()) {}
 
 QString EpochItem::makeText() { return QString::number(QDateTime::currentSecsSinceEpoch()); }
 
@@ -121,13 +122,13 @@ shared_ptr<Item> makeFromEpochItem(ulong epoch)
     const auto s = QLocale().toString(QDateTime::fromSecsSinceEpoch(epoch), QLocale::LongFormat);
 
     vector<Action> actions;
-    actions.emplace_back(QStringLiteral("c"), trCopy(), [=]{ setClipboardText(s); });
+    actions.emplace_back(u"c"_s, trCopy(), [=]{ setClipboardText(s); });
     if (havePasteSupport())
-        actions.emplace_back(QStringLiteral("cp"), trCopyPaste(),
+        actions.emplace_back(u"cp"_s, trCopyPaste(),
                              [=]{ setClipboardTextAndPaste(s);});
 
     return StandardItem::make(
-        QStringLiteral("u2dt"),
+        u"u2dt"_s,
         s,
         DateTimeItemBase::tr("Date and time from unix time"),
         DateTimeItem::icon_urls,
