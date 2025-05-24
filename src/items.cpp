@@ -5,8 +5,8 @@
 #include <QLocale>
 #include <albert/albert.h>
 #include <albert/standarditem.h>
-using namespace albert::util;
 using namespace Qt::StringLiterals;
+using namespace albert::util;
 using namespace albert;
 using namespace std;
 
