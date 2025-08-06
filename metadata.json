@@ -4,6 +4,7 @@
     "description": "Date and time items",
     "description[de]": "Datum- und Uhrzeitelemente",
     "license": "MIT",
+    "maintainers": ["@manuelschneid3r"],
     "name": "Date and time",
     "name[de]": "Datum und Uhrzeit",
     "url": "https://github.com/albertlauncher/albert-plugin-datetime",
