@@ -1,1 +1,1 @@
-# albert-plugin-datetime
+# Albert plugin: Date and time
