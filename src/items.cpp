@@ -3,17 +3,18 @@
 #include "items.h"
 #include <QDateTime>
 #include <QLocale>
-#include <albert/systemutil.h>
+#include <albert/iconutil.h>
 #include <albert/standarditem.h>
+#include <albert/systemutil.h>
 using namespace Qt::StringLiterals;
 using namespace albert::util;
 using namespace albert;
 using namespace std;
 
+namespace{
 static QString trCopy(){ return DateTimeItemBase::tr("Copy"); }
 static QString trCopyPaste(){ return DateTimeItemBase::tr("Copy and paste"); }
-
-QStringList DateTimeItemBase::icon_urls = {u":datetime"_s};
+}
 
 DateTimeItemBase::DateTimeItemBase(const QString &id, const QString &text, const QString &subtext):
     id_(id),
@@ -31,7 +32,7 @@ QString DateTimeItemBase::text() const { return text_; }
 
 QString DateTimeItemBase::subtext() const { return subtext_; }
 
-QStringList DateTimeItemBase::iconUrls() const { return icon_urls; }
+unique_ptr<Icon> DateTimeItemBase::icon() const { return makeImageIcon(u":datetime"_s); }
 
 QString DateTimeItemBase::inputActionText() const { return subtext_; }
 
@@ -131,7 +132,7 @@ shared_ptr<Item> makeFromEpochItem(ulong epoch)
         u"u2dt"_s,
         s,
         DateTimeItemBase::tr("Date and time from unix time"),
-        DateTimeItem::icon_urls,
+        []{ return makeImageIcon(u":datetime"_s); },
         ::move(actions)
     );
 }

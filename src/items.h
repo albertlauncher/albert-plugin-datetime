@@ -16,13 +16,12 @@ public:
     void removeObserver(albert::Item::Observer*) override;
 
     std::set<albert::Item::Observer*> observers;
-    static QStringList icon_urls;
 
     QString id() const override;
     QString text() const override;
     QString subtext() const override;
-    QStringList iconUrls() const override;
     QString inputActionText() const override;
+    std::unique_ptr<albert::Icon> icon() const override;
     std::vector<albert::Action> actions() const override;
     void timerEvent(QTimerEvent*) override final;
 
