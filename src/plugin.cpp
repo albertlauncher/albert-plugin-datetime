@@ -5,15 +5,15 @@
 #include "ui_configwidget.h"
 #include <albert/matcher.h>
 #include <albert/widgetsutil.h>
-using namespace albert::util;
+#include <QSettings>
 using namespace albert;
 using namespace std;
 
+static const auto ck_show_date_on_empty_query = "show_date_on_empty_query";
 
-Plugin::Plugin()
-{
-    restore_show_date_on_empty_query(settings());
-}
+Plugin::Plugin():
+    show_date_on_empty_query_(settings()->value(ck_show_date_on_empty_query, false).value<bool>())
+{}
 
 QString Plugin::synopsis(const QString &q) const
 {
@@ -31,10 +31,10 @@ static void addItem(vector<RankItem>& items, const Matcher &matcher)
     }
 }
 
-vector<RankItem> Plugin::handleGlobalQuery(const Query &query)
+vector<RankItem> Plugin::rankItems(QueryContext &ctx)
 {
     vector<RankItem> r;
-    Matcher matcher(query);
+    Matcher matcher(ctx);
 
     addItem<DateItem>(r, matcher);
     addItem<TimeItem>(r, matcher);
@@ -42,7 +42,7 @@ vector<RankItem> Plugin::handleGlobalQuery(const Query &query)
     addItem<UtcItem>(r, matcher);
 
     bool isNumber;
-    const ulong unixtime = query.string().toULong(&isNumber);
+    const ulong unixtime = ctx.query().toULong(&isNumber);
     if (isNumber)
         r.emplace_back(makeFromEpochItem(unixtime), 0.);
 
@@ -51,7 +51,7 @@ vector<RankItem> Plugin::handleGlobalQuery(const Query &query)
 
 vector<shared_ptr<Item>> Plugin::handleEmptyQuery()
 {
-    if (show_date_on_empty_query())
+    if (showDateOnEmptyQuery())
         return { make_shared<DateTimeItem>() };
     return {};
 }
@@ -62,11 +62,18 @@ QWidget *Plugin::buildConfigWidget()
     Ui::ConfigWidget ui;
     ui.setupUi(w);
 
-    bind(ui.checkBox_emptyQuery,
-         this,
-         &Plugin::show_date_on_empty_query,
-         &Plugin::set_show_date_on_empty_query,
-         &Plugin::show_date_on_empty_query_changed);
+    bindWidget(ui.checkBox_emptyQuery, this, &Plugin::showDateOnEmptyQuery, &Plugin::setShowDateOnEmptyQuery);
 
     return w;
+}
+
+bool Plugin::showDateOnEmptyQuery() const { return show_date_on_empty_query_; }
+
+void Plugin::setShowDateOnEmptyQuery(bool v)
+{
+    if (show_date_on_empty_query_ != v)
+    {
+        settings()->setValue(ck_show_date_on_empty_query, show_date_on_empty_query_);
+        show_date_on_empty_query_ = v;
+    }
 }

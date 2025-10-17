@@ -3,9 +3,8 @@
 #pragma once
 #include <albert/extensionplugin.h>
 #include <albert/globalqueryhandler.h>
-#include <albert/property.h>
 
-class Plugin : public albert::util::ExtensionPlugin,
+class Plugin : public albert::ExtensionPlugin,
                public albert::GlobalQueryHandler
 {
     ALBERT_PLUGIN
@@ -16,9 +15,14 @@ public:
 
     QWidget *buildConfigWidget() override;
     QString synopsis(const QString &) const override;
-    std::vector<albert::RankItem> handleGlobalQuery(const albert::Query &) override;
+    std::vector<albert::RankItem> rankItems(albert::QueryContext &) override;
     std::vector<std::shared_ptr<albert::Item>> handleEmptyQuery() override;
 
-    ALBERT_PLUGIN_PROPERTY(bool, show_date_on_empty_query, false)
+    bool showDateOnEmptyQuery() const;
+    void setShowDateOnEmptyQuery(bool);
+
+private:
+
+    bool show_date_on_empty_query_;
 
 };
