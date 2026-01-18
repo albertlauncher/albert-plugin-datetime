@@ -3,7 +3,7 @@
 #include "items.h"
 #include <QDateTime>
 #include <QLocale>
-#include <albert/iconutil.h>
+#include <albert/icon.h>
 #include <albert/standarditem.h>
 #include <albert/systemutil.h>
 using namespace Qt::StringLiterals;
@@ -31,7 +31,7 @@ QString DateTimeItemBase::text() const { return text_; }
 
 QString DateTimeItemBase::subtext() const { return subtext_; }
 
-unique_ptr<Icon> DateTimeItemBase::icon() const { return makeImageIcon(u":datetime"_s); }
+unique_ptr<Icon> DateTimeItemBase::icon() const { return Icon::image(u":datetime"_s); }
 
 QString DateTimeItemBase::inputActionText() const { return subtext_; }
 
@@ -131,7 +131,7 @@ shared_ptr<Item> makeFromEpochItem(ulong epoch)
         u"u2dt"_s,
         s,
         DateTimeItemBase::tr("Date and time from unix time"),
-        []{ return makeImageIcon(u":datetime"_s); },
+        []{ return Icon::image(u":datetime"_s); },
         ::move(actions)
     );
 }
