@@ -24,11 +24,7 @@ template<typename T>
 static void addItem(vector<RankItem>& items, const Matcher &matcher)
 {
     if (const auto m = matcher.match(T::trName()); m)
-    {
-        auto item = make_shared<T>();
-        item->moveToThread(qApp->thread());
-        items.emplace_back(::move(item), m);
-    }
+        items.emplace_back(make_shared<T>(), m);
 }
 
 vector<RankItem> Plugin::rankItems(QueryContext &ctx)

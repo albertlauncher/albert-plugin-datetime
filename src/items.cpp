@@ -2,6 +2,7 @@
 
 #include "items.h"
 #include <QDateTime>
+#include <QCoreApplication>
 #include <QLocale>
 #include <albert/icon.h>
 #include <albert/standarditem.h>
@@ -15,11 +16,15 @@ static QString trCopy(){ return DateTimeItemBase::tr("Copy"); }
 static QString trCopyPaste(){ return DateTimeItemBase::tr("Copy and paste"); }
 }
 
-DateTimeItemBase::DateTimeItemBase(const QString &id, const QString &text, const QString &subtext):
+DateTimeItemBase::DateTimeItemBase(const QString &id, const QString &text, const QString &subtext) :
     id_(id),
     text_(text),
     subtext_(subtext)
-{ startTimer(1s); }
+{
+    // Timers must be started and stopped from the same thread
+    moveToThread(qApp->thread());
+    startTimer(1s);
+}
 
 void DateTimeItemBase::addObserver(Observer *observer) { observers.insert(observer); }
 
