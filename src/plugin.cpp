@@ -73,7 +73,7 @@ void Plugin::setShowDateOnEmptyQuery(bool v)
 {
     if (show_date_on_empty_query_ != v)
     {
-        settings()->setValue(ck_show_date_on_empty_query, show_date_on_empty_query_);
+        settings()->setValue(ck_show_date_on_empty_query, v);
         show_date_on_empty_query_ = v;
     }
 }
