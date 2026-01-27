@@ -23,7 +23,11 @@ DateTimeItemBase::DateTimeItemBase(const QString &id, const QString &text, const
 {
     // Timers must be started and stopped from the same thread
     moveToThread(qApp->thread());
-    startTimer(1s);
+
+    // Invoke timer start in main thread
+    QMetaObject::invokeMethod(this, [this]{
+        startTimer(1s);  // 1s
+    }, Qt::QueuedConnection);
 }
 
 void DateTimeItemBase::addObserver(Observer *observer) { observers.insert(observer); }
