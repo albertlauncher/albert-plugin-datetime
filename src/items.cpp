@@ -65,7 +65,7 @@ void DateTimeItemBase::timerEvent(QTimerEvent*)
     {
         text_ = t;
         for (auto observer : observers)
-            observer->notify(this);
+            observer->onItemChanged(this);
     }
 }
 
