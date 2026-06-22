@@ -15,7 +15,7 @@ public:
 
     QWidget *buildConfigWidget() override;
     QString synopsis(const QString &) const override;
-    std::vector<albert::RankItem> rankItems(albert::QueryContext &) override;
+    std::vector<albert::RankItem> rankItems(albert::QueryContext) override;
     std::vector<std::shared_ptr<albert::Item>> handleEmptyQuery() override;
 
     bool showDateOnEmptyQuery() const;

@@ -27,7 +27,7 @@ static void addItem(vector<RankItem>& items, const Matcher &matcher)
         items.emplace_back(make_shared<T>(), m);
 }
 
-vector<RankItem> Plugin::rankItems(QueryContext &ctx)
+vector<RankItem> Plugin::rankItems(QueryContext ctx)
 {
     vector<RankItem> r;
     Matcher matcher(ctx);
