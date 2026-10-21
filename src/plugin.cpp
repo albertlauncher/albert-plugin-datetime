@@ -24,7 +24,7 @@ template<typename T>
 static void addItem(vector<RankItem>& items, const Matcher &matcher)
 {
     if (const auto m = matcher.match(T::trName()); m)
-        items.emplace_back(make_shared<T>(), m);
+        items.emplace_back(makeSafeSharedPtr<T>(), m);
 }
 
 vector<RankItem> Plugin::rankItems(QueryContext &ctx)
@@ -48,7 +48,7 @@ vector<RankItem> Plugin::rankItems(QueryContext &ctx)
 vector<shared_ptr<Item>> Plugin::handleEmptyQuery()
 {
     if (showDateOnEmptyQuery())
-        return { make_shared<DateTimeItem>() };
+        return { makeSafeSharedPtr<DateTimeItem>() };
     return {};
 }
 

@@ -73,3 +73,11 @@ public:
 };
 
 std::shared_ptr<albert::Item> makeFromEpochItem(ulong epoch);
+
+// Creates a shared_ptr that calls deleteLater() on the last release. Standard delete may destroy
+// the object outside of its own thread, which prevents cleanup of its timers, leading to crashes.
+template<typename T>
+std::shared_ptr<T> makeSafeSharedPtr()
+{
+    return std::shared_ptr<T>(new T, [](T *item){ item->deleteLater(); });
+}
